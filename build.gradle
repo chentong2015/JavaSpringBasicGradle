@@ -1,0 +1,70 @@
+// 配置/使用第三方(plugins, tasks, other classes) in the rest of the buildscript
+// buildscript {
+//    // Extra properties: map(key, value)
+//    ext {
+//        springBootVersion = '2.4.3'
+//    }
+//    // repositories for the buildscript
+//    repositories {
+//        mavenCentral()
+//    }
+//    // dependencies for the buildscript
+//    dependencies {
+//        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+//    }
+//}
+
+// 1. 前面只能包含buildscript {} 或者别的 plugins {} blocks
+// 2. 这里的版本号适用于所有的module, 每一个module作为一个Gradle project, 在module中只需要提供id (不用在标明版本号) !!
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '2.4.4'                 // web中包含main class, 使用该插件来pack application
+    id 'io.spring.dependency-management' version '1.0.11.RELEASE' // 管理Spring dependency依赖
+}
+
+// 由于当前root project使用springframework boot plugin, 但是没有启动的main入口, 导致bootJar报错
+bootJar { enabled = false }
+jar { enabled = true }
+
+// Root project and each its sub-projects: 提取共享的配置
+// -SNAPSHOT: not the final version, just for development !!!
+allprojects {
+    group = 'com.example'
+    version = '1.0.0-SNAPSHOT'
+    sourceCompatibility = '11'
+
+    repositories {
+        mavenCentral()
+    }
+}
+
+// 3种添加依赖项的类型 https://developer.android.com/studio/build/dependencies 构建方法同样适用于android
+/*
+dependencies {
+    // Dependency on a local library module
+    implementation project(":my-module")
+
+    // Dependency on local binaries
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    // Dependency on a remote binary
+    implementation 'com.example.android:app-magic:12.3'
+}
+ */
+dependencies {
+    // import an existing maven BOM, use <dependencyManagement> to control the dependency versions of direct and transitive dependencies
+    // implementation platform('org.springframework.boot:spring-boot-dependencies:1.5.8.RELEASE')
+
+    compileOnly 'org.projectlombok:lombok'       // Need lombok for compiling
+    annotationProcessor 'org.projectlombok:lombok' // Gradle can process the Annotations
+}
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+
+
+

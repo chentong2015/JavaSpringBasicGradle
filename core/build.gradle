@@ -1,0 +1,28 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot'
+    id 'io.spring.dependency-management'
+}
+
+bootJar { enabled = false }
+jar { enabled = true }
+
+// 解决在Java编译时, 由于源文件中字符带来的编码问题
+// complieJava.options.encoding = 'UTF-8'
+// 
+// tasks.withType(JavaCompile) {
+//    options.encoding = "UTF-8"
+//}
+
+dependencies {
+    // 使用"spring-boot"依赖
+    // 1. 可以没有main程序入口
+    // 2. 只能使用普通的main入口
+    // implementation 'org.springframework.boot:spring-boot'
+
+    // 使用"spring-boot-starter"依赖
+    // 1. 如果没有main入口，则需要添加 bootJar { enabled = false }
+    // 2. 在使用@SpringBootApplication注解的类型中，声明Main启动方法
+    // 3. 使用普通的main入口，则在别的module中无法解析改module context中的bean
+    implementation 'org.springframework.boot:spring-boot-starter'
+}
